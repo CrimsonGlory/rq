@@ -134,10 +134,10 @@ def import_attribute(name: str) -> Callable[..., Any]:
     attribute_owner_name = '.'.join(attribute_bits)
     try:
         attribute_owner = getattr(module, attribute_owner_name)
-    except AttributeError:
-        raise ValueError('Invalid attribute name: %s' % attribute_name)
+    except AttributeError as e:
+        raise ValueError('Invalid attribute name: %s. e=%s' % (attribute_name, e))
     except Exception as e:
-        logging.exception("Original exception:")
+        logging.exception("Original exception: %s" % e)
         raise ValueError(f"Unexpected error while getting attribute '{attribute_owner_name}' from '{name}': {e}") from e
 
     if not hasattr(attribute_owner, attribute_name):
