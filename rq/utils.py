@@ -137,6 +137,7 @@ def import_attribute(name: str) -> Callable[..., Any]:
     except AttributeError:
         raise ValueError('Invalid attribute name: %s' % attribute_name)
     except Exception as e:
+        logging.exception("Original exception:")
         raise ValueError(f"Unexpected error while getting attribute '{attribute_owner_name}' from '{name}': {e}") from e
 
     if not hasattr(attribute_owner, attribute_name):
