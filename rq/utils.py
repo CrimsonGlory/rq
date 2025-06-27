@@ -137,6 +137,17 @@ def import_attribute(name: str) -> Callable[..., Any]:
     try:
         attribute_owner = getattr(module, attribute_owner_name)
     except AttributeError as e:
+        full_mod = f"{module_name}.{attribute_owner_name}"
+        try:
+            importlib.import_module(full_mod)
+        except Exception as submod_exc:
+            # Raise the real underlying import error, with context
+            print("imporerror print inside other exception")
+            logging.exception(
+                f"ImportError when importing '{full_mod}': {type(submod_exc).__name__}: {submod_exc}"
+            ) from submod_exc
+        # If importing the submodule didn't fail, the attribute just doesn't exist
+        
         print("print exception1 e=%s" % e)
         raise ValueError('Invalid attribute name: %s. e=%s' % (attribute_name, e)) from e
     except Exception as e:
