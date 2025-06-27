@@ -123,7 +123,8 @@ def import_attribute(name: str) -> Callable[..., Any]:
         # maybe it's a builtin
         try:
             return __builtins__[name]  # type: ignore[index]
-        except KeyError:
+        except KeyError as e:
+            print("print exception4 e=%s" % e)
             raise ValueError(f'Invalid attribute name: {name}')
 
     attribute_name = '.'.join(attribute_bits)
@@ -135,12 +136,15 @@ def import_attribute(name: str) -> Callable[..., Any]:
     try:
         attribute_owner = getattr(module, attribute_owner_name)
     except AttributeError as e:
+        print("print exception1 e=%s" % e)
         raise ValueError('Invalid attribute name: %s. e=%s' % (attribute_name, e))
     except Exception as e:
+        print("print exception2 e=%s" % e)
         logging.exception("Original exception: %s" % e)
         raise ValueError(f"Unexpected error while getting attribute '{attribute_owner_name}' from '{name}': {e}") from e
 
     if not hasattr(attribute_owner, attribute_name):
+        print("print exception3 e=%s" % e)
         raise ValueError('Invalid attribute name: %s' % name)
     return getattr(attribute_owner, attribute_name)
 
