@@ -116,7 +116,8 @@ def import_attribute(name: str) -> Callable[..., Any]:
             module_name = '.'.join(module_name_bits)
             module = importlib.import_module(module_name)
             break
-        except ImportError:
+        except ImportError as e:
+            logging.exception("ImportError print: %s" % e)
             attribute_bits.insert(0, module_name_bits.pop())
 
     if module is None:
@@ -125,7 +126,7 @@ def import_attribute(name: str) -> Callable[..., Any]:
             return __builtins__[name]  # type: ignore[index]
         except KeyError as e:
             print("print exception4 e=%s" % e)
-            raise ValueError(f'Invalid attribute name: {name}')
+            raise ValueError(f'Invalid attribute name: {name}') from e
 
     attribute_name = '.'.join(attribute_bits)
     if hasattr(module, attribute_name):
@@ -137,7 +138,7 @@ def import_attribute(name: str) -> Callable[..., Any]:
         attribute_owner = getattr(module, attribute_owner_name)
     except AttributeError as e:
         print("print exception1 e=%s" % e)
-        raise ValueError('Invalid attribute name: %s. e=%s' % (attribute_name, e))
+        raise ValueError('Invalid attribute name: %s. e=%s' % (attribute_name, e)) from e
     except Exception as e:
         print("print exception2 e=%s" % e)
         logging.exception("Original exception: %s" % e)
@@ -145,7 +146,7 @@ def import_attribute(name: str) -> Callable[..., Any]:
 
     if not hasattr(attribute_owner, attribute_name):
         print("print exception3 e=%s" % e)
-        raise ValueError('Invalid attribute name: %s' % name)
+        raise ValueError('Invalid attribute name: %s' % name) from e
     return getattr(attribute_owner, attribute_name)
 
 
